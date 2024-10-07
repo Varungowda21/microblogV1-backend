@@ -2,7 +2,7 @@ import { instance } from "../../index.js";
 import { Payment } from "../models/Payment-model.js";
 import { User } from "../models/User-model.js";
 import crypto from "crypto";
-import { sendEmail } from "../../utils/sendEmail.js";
+//import { sendEmail } from "../../utils/sendEmail.js";
 
 const paymentCtrl = {};
 
@@ -42,21 +42,21 @@ paymentCtrl.paymentVerification = async (req, res) => {
   console.log("I P V");
   const { razorpay_signature, razorpay_payment_id, razorpay_subscription_id } =
     req.body;
-  // console.log(req.body);
+  console.log(req.body);
 
   try {
     const user = await User.findById(req.userId);
     const subscription_id = user.subscription.id;
-    // console.log(subscription_id);
+    console.log(subscription_id);
 
     const generated_signature = crypto
       .createHmac("sha256", process.env.RAZORPAY_API_SECREAT)
       .update(razorpay_payment_id + "|" + subscription_id, "utf-8")
       .digest("hex");
-    // console.log(generated_signature);
-    // console.log(razorpay_signature);
+    console.log(generated_signature);
+    console.log(razorpay_signature);
     const isAuthentic = generated_signature == razorpay_signature;
-    // console.log(isAuthentic);
+    console.log(isAuthentic);
     if (!isAuthentic)
       return res.redirect(`${process.env.FRONTEND_URL}/payment-fail`);
 
@@ -69,10 +69,10 @@ paymentCtrl.paymentVerification = async (req, res) => {
     user.subscription.status = "active";
     // req.subscription.status = "active";
     // console.log(req.subscription.status);
-    const to = user.email;
-    const subject = "SkillBoost";
-    const text = `name:${user.name} \n email:${user.email} \n congratulations You have been subscribed to skillboost`;
-    await sendEmail(to, subject, text);
+    // const to = user.email;
+    // const subject = "SkillBoost";
+    // const text = `name:${user.name} \n email:${user.email} \n congratulations You have been subscribed to skillboost`;
+    // await sendEmail(to, subject, text);
 
     await user.save();
 
@@ -116,14 +116,14 @@ paymentCtrl.cancelSubscription = async (req, res) => {
     user.subscription.id = undefined;
     user.subscription.status = "Not active";
 
-    const to = user.email;
-    const subject = "SkillBoost";
-    const text = `name:${user.name} \n email:${user.email} \n ${
-      refund
-        ? "subscription cancelled, amount will be refunded"
-        : "subscription cancelled"
-    }`;
-    await sendEmail(to, subject, text);
+    // const to = user.email;
+    // const subject = "SkillBoost";
+    // const text = `name:${user.name} \n email:${user.email} \n ${
+    //   refund
+    //     ? "subscription cancelled, amount will be refunded"
+    //     : "subscription cancelled"
+    // }`;
+    // await sendEmail(to, subject, text);
     // req.subscription.status = "Not active";
     // console.log(req.subscription.status);
     await user.save();
