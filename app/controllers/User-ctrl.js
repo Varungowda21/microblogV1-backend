@@ -284,6 +284,10 @@ userCtrl.deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
     const user = await User.findById(id);
+    if (user.role == "admin")
+      return res
+        .status(404)
+        .json({ message: "You cannot delete your account" });
     if (!user) return res.status(404).json({ message: "user not found" });
     await cloudinary.v2.uploader.destroy(user.avatar.public_id);
 
